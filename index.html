@@ -1,1 +1,1011 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AttendAI student portal and attendance management dashboard - Standalone Edition">
+  <title>AttendAI — Student Portal (Standalone)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{font-family:'DM Sans',sans-serif;color:#202a3b;background:#f6f8fc;font-size:14px;--line:#e9edf4;--muted:#8793a6;--blue:#4f70e6}
+    *{box-sizing:border-box}
+    body{margin:0;min-width:320px;background:#f6f8fc}
+    button,input,select{font:inherit}
+    button,a{cursor:pointer}
+    .shell{min-height:100vh}
+    .sidebar{width:246px;background:#fff;border-right:1px solid #edf0f5;position:fixed;inset:0 auto 0 0;display:flex;flex-direction:column;padding:27px 17px 17px;z-index:20}
+    .brand{display:flex;align-items:center;gap:11px;padding:0 8px 36px}
+    .brand-mark{width:42px;height:42px;border-radius:13px;background:#4d70e7;color:white;display:grid;place-items:center;font-size:22px;box-shadow:0 6px 14px #4d70e72b}
+    .brand b{font:800 21px Manrope,sans-serif;letter-spacing:-.8px;display:block;color:#222d42}
+    .brand b span{color:#5275e8}
+    .brand small{display:block;font-size:9px;letter-spacing:1.7px;color:#99a3b3;margin-top:2px;font-weight:700}
+    .nav-label{font-size:10px;font-weight:700;letter-spacing:1.4px;color:#a4adbc;padding:0 12px 12px}
+    .sidebar nav{display:grid;gap:5px}
+    .nav-link{display:flex;align-items:center;gap:13px;width:100%;padding:12px 13px;border:0;background:none;text-decoration:none;color:#77849a;border-radius:9px;font-size:13px;font-weight:600;position:relative;text-align:left}
+    .nav-link:hover{background:#f6f8ff;color:#4769d7}
+    .nav-link.active{color:#4567db;background:#edf1ff;font-weight:700}
+    .nav-link.active:before{content:"";width:3px;height:21px;background:#4d70e7;position:absolute;left:0;border-radius:0 3px 3px 0}
+    .nav-icon{width:18px;text-align:center;font-size:18px}
+    .ai-tag{font-size:9px;background:#e9edff;color:#506be0;padding:3px 5px;border-radius:4px;margin-left:auto}
+    .sidebar-bottom{margin-top:auto}
+    .help-card{border:1px solid #e9edfa;background:linear-gradient(145deg,#f7f8ff,#fff);padding:15px 13px;border-radius:12px;margin:0 2px 20px}
+    .help-spark{color:#617be6;margin-bottom:9px;font-size:20px}
+    .help-card>b{font-size:12px}
+    .help-card p{font-size:11px;color:#8591a5;line-height:1.65;margin:6px 0 12px}
+    .help-card a{color:#4c6bdd;font-size:11px;font-weight:700;text-decoration:none}
+    .admin-profile{display:flex;align-items:center;gap:10px;padding:17px 4px 0;border-top:1px solid #edf0f5}
+    .admin-avatar,.top-avatar{width:34px;height:34px;border-radius:50%;background:#f0e6da;color:#93643c;display:grid;place-items:center;font-size:11px;font-weight:800;flex-shrink:0}
+    .admin-profile>div:nth-child(2){display:grid;gap:4px}
+    .admin-profile b{font-size:11px}
+    .admin-profile small{font-size:10px;color:#9aa4b4}
+    .profile-dots{margin-left:auto;color:#a6afbd}
+    .main{margin-left:246px;min-height:100vh;display:flex;flex-direction:column}
+    .topbar{height:70px;background:#fff;border-bottom:1px solid #edf0f5;display:flex;align-items:center;justify-content:space-between;padding:0 38px;position:sticky;top:0;z-index:10}
+    .breadcrumb{color:#9ba5b5;font-size:12px}
+    .breadcrumb span{padding:0 10px;color:#c3cad4}
+    .breadcrumb b{color:#354157}
+    .top-actions{display:flex;align-items:center;gap:21px}
+    .online{font-size:11px;color:#7b8799;display:flex;align-items:center;gap:7px}
+    .online i,.footer>span:last-child i{width:6px;height:6px;border-radius:50%;background:#31bf88;display:inline-block}
+    .top-avatar{width:32px;height:32px}
+    .content{width:100%;max-width:1500px;margin:0 auto;padding:31px 38px 34px;flex:1}
+    .page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:26px}
+    .eyebrow{font-size:10px;letter-spacing:1.6px;color:#8291aa;font-weight:700;margin-bottom:8px}
+    .page-heading h1{font:800 27px Manrope,sans-serif;letter-spacing:-1px;margin:0;color:#202b3e}
+    .page-heading p{margin:8px 0 0;color:#8995a7;font-size:12px}
+    .heading-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .btn{border:1px solid transparent;border-radius:8px;padding:10px 14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:11px;text-decoration:none;white-space:nowrap}
+    .primary{background:#4e70e6;color:white;box-shadow:0 4px 10px #4e70e622}
+    .primary:hover{background:#3e5fd0}
+    .light{background:#fff;border-color:#e4e9f2;color:#58667c}
+    .light:hover{background:#f8f9fd}
+    .date-control{display:flex;align-items:center;gap:9px;border:1px solid #e4e9f2;background:#fff;color:#718097;padding:9px 11px;border-radius:8px}
+    .date-control input{border:0;outline:0;background:transparent;color:#59667b;font-size:11px;width:120px}
+    .welcome-banner{height:171px;border-radius:14px;background:linear-gradient(105deg,#e9edff,#f2f3ff 55%,#f8f2ff);position:relative;overflow:hidden;display:flex;align-items:center;padding:26px 29px;margin-bottom:29px}
+    .welcome-copy{position:relative;z-index:2}
+    .kicker{font-size:9px;font-weight:800;letter-spacing:1.1px;color:#6176d9}
+    .welcome-copy h2,.ai-hero h2{font:800 23px Manrope,sans-serif;letter-spacing:-.7px;color:#26334b;margin:10px 0 7px}
+    .welcome-copy p,.ai-hero p{font-size:11px;color:#7b87a1;margin:0;max-width:365px;line-height:1.65}
+    .welcome-date{margin-left:auto;align-self:center;display:grid;gap:6px;position:relative;z-index:2;text-align:right;padding-right:8px}
+    .welcome-date small{font-size:9px;letter-spacing:1px;color:#8c96b4;font-weight:700}
+    .welcome-date b{font:800 28px Manrope,sans-serif;color:#4f66c8}
+    .welcome-date span{font-size:10px;color:#8993af}
+    .banner-orb{position:absolute;border-radius:50%;border:1px solid #aab8f0;opacity:.65}
+    .orb1{width:180px;height:180px;right:150px;top:-15px}
+    .orb2{width:125px;height:125px;right:178px;top:12px;background:#d9e1ff}
+    .banner-cap{position:absolute;right:219px;top:67px;font-size:50px;color:#6c80db;transform:rotate(-15deg);opacity:.7}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .section-title h2{font:800 15px Manrope,sans-serif;margin:0;color:#2b3548}
+    .section-title p,.panel-head p{font-size:11px;color:#98a2b2;margin:5px 0 0}
+    .section-title a,.panel-head>a{background:none;border:0;color:#5874dd;font-size:11px;font-weight:700;text-decoration:none}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:23px}
+    .metric{background:#fff;border:1px solid #edf0f5;border-radius:12px;padding:18px;position:relative;overflow:hidden;min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+    .metric-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;margin-bottom:15px;font-size:19px;font-weight:700}
+    .metric-icon.blue{background:#edf2ff;color:#5775e3}
+    .metric-icon.green{background:#e6f8f0;color:#28ae7b}
+    .metric-icon.orange{background:#fff2e5;color:#e6a04d}
+    .metric-icon.purple{background:#f1eaff;color:#9770dd}
+    .metric>span{font-size:11px;color:#8793a6;font-weight:600}
+    .metric strong{font:800 26px Manrope,sans-serif;letter-spacing:-.8px;margin:5px 0 7px;color:#253148}
+    .metric>small{font-size:10px;color:#a0a9b7}
+    .dashboard-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:17px;margin-bottom:22px}
+    .panel{background:#fff;border:1px solid #edf0f5;border-radius:12px;min-width:0;overflow:hidden}
+    .panel-head{padding:20px 21px 15px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+    .panel-head h3{font:800 13px Manrope,sans-serif;margin:0;color:#303b50}
+    .icon-action{width:32px;height:32px;display:grid;place-items:center;text-decoration:none;background:#f8f9fc;color:#8591a4;border-radius:8px;border:none}
+    .donut-wrap{display:flex;align-items:center;justify-content:center;gap:32px;padding:8px 24px 19px}
+    .donut{width:145px;height:145px;border-radius:50%;background:conic-gradient(#4f70e6 0deg var(--rate, 0deg),#edf0f8 var(--rate, 0deg) 360deg);display:grid;place-items:center;position:relative;flex-shrink:0}
+    .donut:after{content:"";position:absolute;inset:11px;border-radius:50%;background:white}
+    .donut>div{position:relative;z-index:1;display:grid;text-align:center;gap:4px}
+    .donut b{font:800 24px Manrope,sans-serif;color:#27344c}
+    .donut small{font-size:9px;color:#98a2b3}
+    .legend{display:grid;gap:14px;min-width:118px;flex:1}
+    .legend>div{display:grid;grid-template-columns:9px 1fr auto;align-items:center;gap:8px;font-size:10px;color:#8793a5}
+    .legend b{font-size:11px;color:#37445a}
+    .dot{width:7px;height:7px;border-radius:3px}
+    .dot.present{background:#4f70e6}
+    .dot.late{background:#f1b357}
+    .dot.absent{background:#ee7b84}
+    .dot.unmarked{background:#dfe4ee}
+    .panel-foot{border-top:1px solid #f0f2f7;padding:12px 20px;color:#99a3b2;font-size:9px}
+    .ai-heading{display:flex;align-items:center;gap:11px}
+    .ai-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;color:#8168d9;background:#f1edff;font-size:21px}
+    .smart-tag,.count-tag{font-size:8px;letter-spacing:.8px;background:#f1edff;color:#8c72d8;padding:5px 7px;border-radius:5px;font-weight:800}
+    .insight-box{display:flex;gap:12px;padding:13px 21px 17px}
+    .insight-star{width:30px;height:30px;border-radius:9px;background:#f4f0ff;color:#9178e3;display:grid;place-items:center;flex-shrink:0}
+    .insight-box b{font-size:11px;color:#47546a}
+    .insight-box p{font-size:10px;line-height:1.8;color:#8c97a9;margin:7px 0 0}
+    .ai-button{background:#f0edff;color:#7660d1;border:1px solid #e7e1ff;margin:0 21px;width:calc(100% - 42px)}
+    .privacy-note{font-size:9px;color:#a0a9b6;text-align:center;margin:11px 12px 15px}
+    .history-panel{margin-bottom:5px}
+    .history-panel .panel-head{padding-bottom:10px}
+    .history-list{padding:0 21px 12px}
+    .history-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #f2f4f8}
+    .history-icon{width:32px;height:32px;display:grid;place-items:center;background:#f1f4ff;color:#7184d9;border-radius:8px}
+    .history-date{display:grid;gap:4px;min-width:150px}
+    .history-date b{font-size:10px;color:#48556b}
+    .history-date small{font-size:9px;color:#a0a9b6}
+    .history-track{height:5px;background:#eff1f7;border-radius:8px;flex:1;overflow:hidden}
+    .history-track i{height:100%;background:#5a78e8;border-radius:8px;display:block}
+    .history-row>strong{font-size:10px;color:#4b5a74;width:31px;text-align:right}
+    .empty{text-align:center;padding:35px 15px;color:#8995a7}
+    .empty>div{font-size:25px;color:#7185d9}
+    .empty>b{font-size:12px;color:#48556b}
+    .empty p{font-size:10px}
+    .footer{display:flex;justify-content:space-between;padding:17px 38px 22px;border-top:1px solid #e9edf4;color:#a1aab8;font-size:10px}
+    .footer>span:last-child{display:flex;align-items:center;gap:7px}
+    .compact{margin-bottom:21px}
+    .table-panel{overflow:hidden}
+    .table-toolbar{align-items:center;flex-wrap:wrap}
+    .table-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .search{border:1px solid #e5eaf2;background:white;border-radius:8px;padding:10px 12px;color:#354158;min-width:190px;outline:none;font-size:11px}
+    .search::placeholder{color:#a3adbb}
+    .search:focus{border-color:#9aaaf0}
+    .table-scroll{overflow-x:auto}
+    table{border-collapse:collapse;width:100%;text-align:left;white-space:nowrap}
+    thead{background:#f9fafc}
+    th{padding:12px 19px;font-size:9px;letter-spacing:.7px;color:#98a3b2;font-weight:700;border-top:1px solid #f0f2f7;border-bottom:1px solid #f0f2f7}
+    td{padding:13px 19px;border-bottom:1px solid #f1f3f7;color:#768297;font-size:10px}
+    tbody tr:last-child td{border-bottom:0}
+    tbody tr:hover{background:#fcfcff}
+    .student-cell{display:flex;align-items:center;gap:10px}
+    .student-avatar{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:9px;font-weight:800;flex-shrink:0}
+    .avatar-0{background:#e9edff;color:#5772d8}
+    .avatar-1{background:#ffefe2;color:#b77d42}
+    .avatar-2{background:#e4f7ef;color:#399f7c}
+    .avatar-3{background:#f2eaff;color:#9067d0}
+    .avatar-4{background:#e4f2fb;color:#4387b5}
+    .avatar-5{background:#ffe8ec;color:#c36c7d}
+    .student-cell>div:last-child{display:grid;gap:4px}
+    .student-cell b{font-size:10px;color:#3e4b61}
+    .student-cell small{font-size:9px;color:#a1aab8}
+    .student-id{font-size:10px;font-weight:700;color:#78869d}
+    .status-select{border:0;border-radius:5px;padding:6px 8px;font-size:9px;font-weight:700;outline:none;cursor:pointer;max-width:115px}
+    .status-present{background:#e8f8f0;color:#2da777}
+    .status-absent{background:#fff0f0;color:#dc737b}
+    .status-late{background:#fff5e7;color:#d59b40}
+    .status-excused{background:#f1edff;color:#8c73d4}
+    .status-unmarked{background:#f0f2f6;color:#8994a5}
+    .table-foot{border-top:1px solid #f0f2f7;padding:13px 20px;display:flex;justify-content:space-between;gap:12px;color:#a1aab8;font-size:9px}
+    .student-summary{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:19px}
+    .student-summary>div:first-child{display:flex;align-items:center;gap:12px}
+    .summary-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;background:#eaf0ff;color:#5874df;font-size:22px}
+    .student-summary>div:first-child>div:last-child{display:grid;gap:4px}
+    .student-summary small{font-size:10px;color:#8995a8}
+    .student-summary b{font:800 20px Manrope,sans-serif;color:#303b50}
+    .directory-search{min-width:260px}
+    .delete-btn{border:0;background:transparent;color:#c36c7d;font-size:19px;cursor:pointer;padding:4px 8px;border-radius:5px}
+    .delete-btn:hover{background:#fff0f0}
+    .ai-hero{position:relative;overflow:hidden;display:flex;align-items:center;gap:22px;padding:28px 31px;background:linear-gradient(110deg,#eeebff,#f8f6ff 65%,#f2f5ff);border:1px solid #eae5ff;border-radius:14px;margin-bottom:23px}
+    .ai-hero-icon{width:58px;height:58px;display:grid;place-items:center;flex-shrink:0;background:white;color:#8b73df;border-radius:16px;box-shadow:0 7px 20px #8873d51a;font-size:31px}
+    .ai-hero h2{margin:8px 0 7px;font-size:21px}
+    .ai-hero p{max-width:480px}
+    .hero-decoration{position:absolute;border:1px solid #cfc6f4;border-radius:50%;right:-20px;top:-70px;width:220px;height:220px;opacity:.55}
+    .insight-result{margin-bottom:19px}
+    .generated-insight{display:flex;gap:14px;margin:0 23px 23px;padding:20px;background:#f8f9ff;border:1px solid #ebedff;border-radius:11px}
+    .generated-check{width:31px;height:31px;border-radius:9px;background:#e2f7ed;color:#2ca779;display:grid;place-items:center;flex-shrink:0}
+    .generated-insight b{font-size:12px;color:#38465d}
+    .generated-insight p{font-size:12px;color:#65728a;line-height:1.8;margin:8px 0}
+    .generated-insight small{font-size:10px;color:#9aa4b4}
+    .responsible-note{margin:0 23px 22px;padding:16px 18px;border:1px solid #f2e8d7;background:#fffaf2;border-radius:11px}
+    .responsible-note b{font-size:11px;color:#80653d}
+    .responsible-note p{font-size:10px;color:#a08c6b;line-height:1.7;margin:5px 0 0}
+    .flash-stack{position:fixed;top:20px;right:20px;z-index:9999;display:grid;gap:8px;max-width:360px;width:calc(100% - 40px)}
+    .flash{padding:11px 14px;border-radius:8px;font-size:11px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,0.08);animation:slideIn 0.25s ease-out}
+    @keyframes slideIn{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .flash.success{background:#e8f8f0;color:#247d5a;border:1px solid #c9ebd8}
+    .flash.error{background:#fff0f0;color:#b94d5a;border:1px solid #fcd4d7}
+    .flash button{border:0;background:none;color:inherit;font-size:17px;cursor:pointer}
+    .modal-backdrop{position:fixed;inset:0;background:#202a3b70;z-index:50;display:grid;place-items:center;padding:20px}
+    .modal-backdrop[hidden]{display:none}
+    .modal{width:min(100%,440px);background:white;border-radius:15px;padding:24px;box-shadow:0 24px 70px #15203b38;display:grid;gap:15px}
+    .modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:3px}
+    .modal-head h2{font:800 20px Manrope,sans-serif;margin:0;color:#29354b}
+    .modal-head p{font-size:11px;color:#929daf;margin:6px 0 0}
+    .modal-close{border:0;background:transparent;color:#8591a4;font-size:25px;cursor:pointer}
+    .modal>label{display:grid;gap:7px;font-size:11px;font-weight:700;color:#56637a}
+    .modal input,.modal select{border:1px solid #e1e7f0;border-radius:8px;padding:11px 12px;outline:none;color:#344157;background:white;font-size:12px;width:100%}
+    .modal input:focus,.modal select:focus{border-color:#7890ee;box-shadow:0 0 0 3px #4f70e614}
+    .modal-actions{display:flex;justify-content:flex-end;gap:9px;padding-top:5px}
+    .menu-toggle,.mobile-close{display:none}
+    .view-section{display:none}
+    .view-section.active{display:block}
+    @media(max-width:1200px){.sidebar{width:220px}.main{margin-left:220px}.content{padding:28px 25px}.topbar{padding:0 25px}.metrics{gap:11px}.metric{padding:15px}.dashboard-grid{grid-template-columns:1fr}.donut-wrap{justify-content:flex-start;padding-left:35px}.table-actions{width:100%}}
+    @media(max-width:850px){.sidebar{transform:translateX(-100%);transition:transform .22s;box-shadow:none}.sidebar.nav-open{transform:translateX(0);box-shadow:10px 0 35px #1e2b421a}.menu-toggle,.mobile-close{display:grid;border:0;background:transparent;color:#77849a;font-size:20px;place-items:center}.brand{position:relative}.mobile-close{margin-left:auto}.main{margin-left:0}.topbar{height:62px;padding:0 20px;gap:12px}.breadcrumb{margin-right:auto}.content{padding:25px 20px}.footer{padding:16px 20px}.page-heading{align-items:flex-start;flex-direction:column}.heading-actions{width:100%}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.welcome-banner{padding:22px}.banner-orb{right:30px;opacity:.3}.banner-cap{right:98px;opacity:.3}.table-toolbar{align-items:flex-start}.student-summary{align-items:flex-start;flex-direction:column}.directory-search{width:100%}}
+    @media(max-width:520px){.content{padding:22px 13px}.topbar{padding:0 12px}.top-actions{gap:9px}.online{display:none}.page-heading h1{font-size:24px}.page-heading{margin-bottom:21px}.heading-actions{gap:7px}.date-control{padding:8px}.date-control input{width:110px}.btn{padding:10px 11px}.welcome-banner{padding:20px;height:auto;min-height:165px;align-items:flex-start}.welcome-copy{max-width:75%}.welcome-copy h2{font-size:20px}.welcome-copy p{font-size:10px}.welcome-date{position:absolute;right:16px;bottom:15px;gap:3px}.welcome-date small{font-size:7px}.welcome-date b{font-size:17px}.welcome-date span{font-size:8px}.metrics{gap:9px}.metric{padding:13px}.metric-icon{width:32px;height:32px;margin-bottom:12px}.metric strong{font-size:23px}.metric>span{font-size:10px}.metric>small{font-size:9px;line-height:1.4}.donut-wrap{gap:18px;padding:8px 15px 18px}.donut{width:120px;height:120px}.donut b{font-size:21px}.legend{min-width:100px;gap:12px}.panel-head{padding:17px 14px}.panel-head h3{font-size:12px}.panel-head p{font-size:10px}.history-list{padding:0 14px 10px}.history-date{min-width:0;flex:1}.history-date b{font-size:9px}.history-track{display:none}.history-row{gap:9px}.history-row>strong{margin-left:auto}.table-actions{gap:7px}.search{min-width:0;flex:1}.table-foot{padding:12px 14px;flex-wrap:wrap}.ai-hero{padding:22px 17px;gap:14px;align-items:flex-start}.ai-hero-icon{width:43px;height:43px;border-radius:12px;font-size:24px}.ai-hero h2{font-size:17px}.ai-hero p{font-size:10px}.generated-insight{margin:0 13px 15px;padding:14px}.responsible-note{margin:0 13px 15px;padding:13px}.footer{font-size:9px;gap:12px}.footer>span:last-child{max-width:52%;text-align:right}.modal{padding:20px}.compact .metric{padding:12px}}
+  </style>
+</head>
+<body>
+<div class="flash-stack" id="flashStack"></div>
 
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">🎓</div>
+      <div><b>Attend<span>AI</span></b><small>STUDENT PORTAL</small></div>
+      <button class="mobile-close" onclick="toggleNav(false)" aria-label="Close navigation">×</button>
+    </div>
+    <div class="nav-label">WORKSPACE</div>
+    <nav>
+      <button class="nav-link active" onclick="switchPage('Overview')" id="nav-Overview"><span class="nav-icon">▦</span>Overview</button>
+      <button class="nav-link" onclick="switchPage('Attendance')" id="nav-Attendance"><span class="nav-icon">☑</span>Attendance</button>
+      <button class="nav-link" onclick="switchPage('Students')" id="nav-Students"><span class="nav-icon">♙</span>Students</button>
+      <button class="nav-link" onclick="switchPage('AI Insights')" id="nav-AI-Insights"><span class="nav-icon">✧</span>AI Insights<span class="ai-tag">AI</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <div class="help-spark">✧</div>
+        <b>Need a hand?</b>
+        <p>Explore attendance and student records from one place.</p>
+        <a href="javascript:void(0)" onclick="switchPage('AI Insights')">Open AI assistant ↗</a>
+      </div>
+      <div class="admin-profile">
+        <div class="admin-avatar">AD</div>
+        <div><b>Portal Admin</b><small>Standalone Edition</small></div>
+        <span class="profile-dots">•••</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <header class="topbar">
+      <button class="menu-toggle" onclick="toggleNav(true)" aria-label="Open navigation">☰</button>
+      <div class="breadcrumb">Workspace <span>/</span> <b id="breadcrumbPage">Overview</b></div>
+      <div class="top-actions">
+        <span class="online"><i></i> System online (Offline ready)</span>
+        <span class="top-avatar">AD</span>
+      </div>
+    </header>
+
+    <section class="content">
+      <!-- HEADER -->
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow" id="headingEyebrow">OVERVIEW</div>
+          <h1 id="headingTitle">Good day, Admin 👋</h1>
+          <p id="headingSubtitle">Here’s what’s happening with your students today.</p>
+        </div>
+        <div class="heading-actions">
+          <div class="date-control">
+            <span>▦</span>
+            <input type="date" id="selectedDateInput" onchange="onDateChanged(this.value)" aria-label="Select attendance date">
+          </div>
+          <div id="dynamicHeadingAction">
+            <button class="btn primary" onclick="switchPage('Attendance')">☑ Take attendance</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: OVERVIEW -->
+      <div id="view-Overview" class="view-section active">
+        <div class="welcome-banner">
+          <div class="welcome-copy">
+            <span class="kicker">✧ YOUR DAILY SNAPSHOT</span>
+            <h2>Every class counts.</h2>
+            <p>Track attendance, understand patterns, and help every student stay on track.</p>
+          </div>
+          <div class="welcome-date">
+            <small>SELECTED DATE</small>
+            <b id="bannerDateShort">--/--</b>
+            <span id="bannerDateFull">----</span>
+          </div>
+          <div class="banner-orb orb1"></div>
+          <div class="banner-orb orb2"></div>
+          <div class="banner-cap">▰</div>
+        </div>
+
+        <div class="section-title">
+          <div>
+            <h2>Attendance overview</h2>
+            <p>Quick summary for the selected date</p>
+          </div>
+          <a href="javascript:void(0)" onclick="switchPage('Attendance')">View register →</a>
+        </div>
+
+        <div class="metrics">
+          <div class="metric"><div class="metric-icon blue">♙</div><span>Total students</span><strong id="mTotal">0</strong><small>Enrolled in portal</small></div>
+          <div class="metric"><div class="metric-icon green">✓</div><span>Present today</span><strong id="mPresent">0</strong><small>Marked present</small></div>
+          <div class="metric"><div class="metric-icon orange">◷</div><span>Absent today</span><strong id="mAbsent">0</strong><small>Needs review</small></div>
+          <div class="metric"><div class="metric-icon purple">▤</div><span>Attendance rate</span><strong id="mRate">0%</strong><small>Present + late / enrolled</small></div>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h3>Attendance status</h3>
+                <p id="donutDateLabel">Progress for today</p>
+              </div>
+              <button class="icon-action" onclick="exportCSV()" title="Export CSV">⇩</button>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut" id="donutChart" style="--rate:0deg">
+                <div>
+                  <b id="donutRate">0%</b>
+                  <small>Attendance</small>
+                </div>
+              </div>
+              <div class="legend">
+                <div><i class="dot present"></i><span>Present</span><b id="legPresent">0</b></div>
+                <div><i class="dot late"></i><span>Late</span><b id="legLate">0</b></div>
+                <div><i class="dot absent"></i><span>Absent</span><b id="legAbsent">0</b></div>
+                <div><i class="dot unmarked"></i><span>Unmarked</span><b id="legUnmarked">0</b></div>
+              </div>
+            </div>
+            <div class="panel-foot">ⓘ Attendance rate counts students marked present or late.</div>
+          </section>
+
+          <section class="panel ai-panel">
+            <div class="panel-head">
+              <div class="ai-heading">
+                <div class="ai-icon">✧</div>
+                <div>
+                  <h3>AI attendance assistant</h3>
+                  <p>Helpful insights from your register</p>
+                </div>
+              </div>
+              <span class="smart-tag">SMART</span>
+            </div>
+            <div class="insight-box">
+              <div class="insight-star">✧</div>
+              <div>
+                <b>Understand your class at a glance</b>
+                <p id="quickInsightText">Loading insights...</p>
+              </div>
+            </div>
+            <button class="btn ai-button" onclick="switchPage('AI Insights')">✧ View AI insights</button>
+            <p class="privacy-note">Built-in insights use attendance totals only.</p>
+          </section>
+        </div>
+
+        <section class="panel history-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Recent attendance activity</h3>
+              <p>Latest dates with saved attendance records</p>
+            </div>
+            <a href="javascript:void(0)" onclick="switchPage('Attendance')">Open register →</a>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+      </div>
+
+      <!-- VIEW 2: ATTENDANCE -->
+      <div id="view-Attendance" class="view-section">
+        <div class="metrics compact">
+          <div class="metric"><div class="metric-icon green">✓</div><span>Present</span><strong id="attPresent">0</strong><small>Students present</small></div>
+          <div class="metric"><div class="metric-icon orange">◷</div><span>Late</span><strong id="attLate">0</strong><small>Arrived late</small></div>
+          <div class="metric"><div class="metric-icon purple">×</div><span>Absent</span><strong id="attAbsent">0</strong><small>Marked absent</small></div>
+          <div class="metric"><div class="metric-icon blue">▤</div><span>Not marked</span><strong id="attUnmarked">0</strong><small>Awaiting status</small></div>
+        </div>
+
+        <section class="panel table-panel">
+          <div class="panel-head table-toolbar">
+            <div>
+              <h3>Student register</h3>
+              <p id="attRegisterDate">Current Date</p>
+            </div>
+            <div class="table-actions">
+              <input id="attendanceSearch" class="search" placeholder="⌕  Search students…" oninput="filterTable('attendanceSearch','attendanceTable')">
+              <button class="btn light" onclick="markAllPresent()">✓ Mark all present</button>
+              <button class="btn light" onclick="exportCSV()">⇩ CSV</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table id="attendanceTable">
+              <thead>
+                <tr>
+                  <th>STUDENT</th>
+                  <th>STUDENT ID</th>
+                  <th>COURSE</th>
+                  <th>YEAR</th>
+                  <th>ATTENDANCE STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBody"></tbody>
+            </table>
+          </div>
+          <div class="table-foot">
+            <span id="attendanceTableCount">Showing 0 students</span>
+            <span>Changes save instantly in your browser.</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- VIEW 3: STUDENTS -->
+      <div id="view-Students" class="view-section">
+        <div class="student-summary">
+          <div>
+            <div class="summary-icon">♙</div>
+            <div>
+              <small>Total student records</small>
+              <b id="studentTotalBanner">0</b>
+            </div>
+          </div>
+          <input id="studentSearch" class="search directory-search" placeholder="⌕  Search name, ID, course…" oninput="filterTable('studentSearch','studentTable')">
+        </div>
+
+        <section class="panel table-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Student directory</h3>
+              <p>View student profiles and course details</p>
+            </div>
+            <span class="count-tag" id="studentCountTag">0 students</span>
+          </div>
+          <div class="table-scroll">
+            <table id="studentTable">
+              <thead>
+                <tr>
+                  <th>STUDENT</th>
+                  <th>STUDENT ID</th>
+                  <th>COURSE</th>
+                  <th>YEAR</th>
+                  <th>EMAIL</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="studentTableBody"></tbody>
+            </table>
+          </div>
+          <div class="table-foot">
+            <span>Student data is stored in your local browser storage.</span>
+            <span>Use synthetic data for public demos.</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- VIEW 4: AI INSIGHTS -->
+      <div id="view-AI Insights" class="view-section">
+        <div class="ai-hero">
+          <div class="ai-hero-icon">✧</div>
+          <div>
+            <span class="kicker">ATTENDANCE INTELLIGENCE</span>
+            <h2>A clearer picture of attendance.</h2>
+            <p>Summarize daily attendance and identify missing records without guessing why a student was absent.</p>
+          </div>
+          <div class="hero-decoration"></div>
+        </div>
+
+        <div class="metrics compact">
+          <div class="metric"><div class="metric-icon blue">▤</div><span>Attendance rate</span><strong id="aiRate">0%</strong><small>Present or late</small></div>
+          <div class="metric"><div class="metric-icon orange">♙</div><span>Absent</span><strong id="aiAbsent">0</strong><small>Needs review</small></div>
+          <div class="metric"><div class="metric-icon purple">◷</div><span>Late arrivals</span><strong id="aiLate">0</strong><small>Marked late</small></div>
+          <div class="metric"><div class="metric-icon green">☑</div><span>Unmarked</span><strong id="aiUnmarked">0</strong><small>Incomplete records</small></div>
+        </div>
+
+        <section class="panel insight-result">
+          <div class="panel-head">
+            <div class="ai-heading">
+              <div class="ai-icon">✧</div>
+              <div>
+                <h3>Daily attendance summary</h3>
+                <p id="aiDateSubtitle">Selected date</p>
+              </div>
+            </div>
+            <span class="count-tag">BUILT-IN INSIGHTS</span>
+          </div>
+          <div class="generated-insight">
+            <div class="generated-check">✓</div>
+            <div>
+              <b>Summary ready</b>
+              <p id="fullInsightText">Loading summary...</p>
+              <small>This rule-based summary uses aggregate totals; it does not infer reasons for individual absences.</small>
+            </div>
+          </div>
+          <div class="responsible-note">
+            <b>Use insights responsibly</b>
+            <p>Attendance patterns alone cannot explain a student's circumstances. Verify the register, protect student privacy, and follow your institution’s support policies before taking action.</p>
+          </div>
+        </section>
+      </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <span>© <span id="footerYear">2026</span> AttendAI Portal</span>
+      <span><i></i> Built for better learning outcomes</span>
+    </footer>
+  </main>
+</div>
+
+<!-- ADD STUDENT MODAL -->
+<div class="modal-backdrop" id="studentModal" hidden onclick="if(event.target===this)closeModal()">
+  <form class="modal" onsubmit="event.preventDefault(); submitAddStudent();">
+    <div class="modal-head">
+      <div>
+        <h2>Add student</h2>
+        <p>Create a new student record.</p>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <label>Full name
+      <input name="name" id="modalStudentName" required placeholder="e.g. Priya Patel">
+    </label>
+    <label>Email address
+      <input name="email" id="modalStudentEmail" type="email" placeholder="student@example.com">
+    </label>
+    <label>Course
+      <select name="course" id="modalStudentCourse">
+        <option>Computer Science</option>
+        <option>Information Technology</option>
+        <option>Data Science</option>
+        <option>Business Administration</option>
+        <option>General</option>
+      </select>
+    </label>
+    <label>Academic year
+      <select name="year" id="modalStudentYear">
+        <option>1st Year</option>
+        <option>2nd Year</option>
+        <option>3rd Year</option>
+        <option>4th Year</option>
+      </select>
+    </label>
+    <div class="modal-actions">
+      <button class="btn light" type="button" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" type="submit">＋ Add student</button>
+    </div>
+  </form>
+</div>
+
+<!-- JAVASCRIPT: CLIENT-SIDE LOCAL STORAGE APP LOGIC -->
+<script>
+const STARTER_STUDENTS = [
+  { id: "STU-1001", name: "Aarav Patel", email: "aarav@example.com", course: "Computer Science", year: "2nd Year" },
+  { id: "STU-1002", name: "Mira Shah", email: "mira@example.com", course: "Information Technology", year: "1st Year" },
+  { id: "STU-1003", name: "Dev Mehta", email: "dev@example.com", course: "Computer Science", year: "3rd Year" },
+  { id: "STU-1004", name: "Anaya Joshi", email: "anaya@example.com", course: "Data Science", year: "2nd Year" },
+  { id: "STU-1005", name: "Kabir Desai", email: "kabir@example.com", course: "Information Technology", year: "1st Year" },
+  { id: "STU-1006", name: "Isha Trivedi", email: "isha@example.com", course: "Data Science", year: "3rd Year" }
+];
+
+let state = {
+  students: [],
+  attendance: {}, // { 'YYYY-MM-DD': { 'student_id': 'Present' } }
+  selectedDate: new Date().toISOString().slice(0, 10),
+  currentPage: 'Overview'
+};
+
+function initData() {
+  const savedStudents = localStorage.getItem('attendai_students');
+  const savedAttendance = localStorage.getItem('attendai_attendance');
+
+  if (savedStudents) {
+    try { state.students = JSON.parse(savedStudents); } catch (e) { state.students = [...STARTER_STUDENTS]; }
+  } else {
+    state.students = [...STARTER_STUDENTS];
+    saveStudents();
+  }
+
+  if (savedAttendance) {
+    try { state.attendance = JSON.parse(savedAttendance); } catch (e) { state.attendance = {}; }
+  } else {
+    // Seed some initial attendance for demonstration
+    const today = state.selectedDate;
+    state.attendance[today] = {
+      "STU-1001": "Present",
+      "STU-1002": "Present",
+      "STU-1003": "Late",
+      "STU-1004": "Present",
+      "STU-1005": "Absent"
+    };
+    saveAttendance();
+  }
+}
+
+function saveStudents() {
+  localStorage.setItem('attendai_students', JSON.stringify(state.students));
+}
+
+function saveAttendance() {
+  localStorage.setItem('attendai_attendance', JSON.stringify(state.attendance));
+}
+
+function getDayStats(dateStr) {
+  const dayRecords = state.attendance[dateStr] || {};
+  let counts = { Present: 0, Absent: 0, Late: 0, Excused: 0 };
+  let markedCount = 0;
+
+  state.students.forEach(s => {
+    const status = dayRecords[s.id];
+    if (status && counts.hasOwnProperty(status)) {
+      counts[status]++;
+      markedCount++;
+    }
+  });
+
+  const total = state.students.length;
+  const unmarked = Math.max(0, total - markedCount);
+  const rate = total ? Math.round(((counts.Present + counts.Late) * 100) / total) : 0;
+
+  return {
+    date: dateStr,
+    total,
+    marked: markedCount,
+    unmarked,
+    present: counts.Present,
+    absent: counts.Absent,
+    late: counts.Late,
+    excused: counts.Excused,
+    rate
+  };
+}
+
+function buildInsight(data) {
+  const summary = `On ${data.date}, ${data.rate}% of enrolled students are marked present or late. There are ${data.absent} absent, ${data.late} late, and ${data.unmarked} unmarked students.`;
+  let advice = "";
+  if (data.unmarked) {
+    advice = "First, check the unmarked records so the attendance report is complete.";
+  } else if (data.rate < 75) {
+    advice = "Review the register for accuracy and follow your institution's usual student-support process.";
+  } else if (data.rate < 90) {
+    advice = "Review absent and late entries for accuracy, and follow up privately where appropriate.";
+  } else {
+    advice = "Attendance is looking strong today. Keep the register updated and review any exceptions.";
+  }
+  return summary + " " + advice;
+}
+
+function renderAll() {
+  const data = getDayStats(state.selectedDate);
+  const insight = buildInsight(data);
+
+  // Update date inputs & displays
+  document.getElementById('selectedDateInput').value = state.selectedDate;
+  const parts = state.selectedDate.split('-');
+  if (parts.length === 3) {
+    document.getElementById('bannerDateShort').innerText = `${parts[1]}/${parts[2]}`;
+  }
+  document.getElementById('bannerDateFull').innerText = state.selectedDate;
+  document.getElementById('donutDateLabel').innerText = `Progress for ${state.selectedDate}`;
+  document.getElementById('attRegisterDate').innerText = state.selectedDate;
+  document.getElementById('aiDateSubtitle').innerText = state.selectedDate;
+
+  // Overview metrics
+  document.getElementById('mTotal').innerText = data.total;
+  document.getElementById('mPresent').innerText = data.present;
+  document.getElementById('mAbsent').innerText = data.absent;
+  document.getElementById('mRate').innerText = `${data.rate}%`;
+
+  // Donut chart
+  const donutDeg = (data.rate * 3.6).toFixed(1) + 'deg';
+  document.getElementById('donutChart').style.setProperty('--rate', donutDeg);
+  document.getElementById('donutRate').innerText = `${data.rate}%`;
+  document.getElementById('legPresent').innerText = data.present;
+  document.getElementById('legLate').innerText = data.late;
+  document.getElementById('legAbsent').innerText = data.absent;
+  document.getElementById('legUnmarked').innerText = data.unmarked;
+
+  // Insights
+  document.getElementById('quickInsightText').innerText = insight;
+  document.getElementById('fullInsightText').innerText = insight;
+  document.getElementById('aiRate').innerText = `${data.rate}%`;
+  document.getElementById('aiAbsent').innerText = data.absent;
+  document.getElementById('aiLate').innerText = data.late;
+  document.getElementById('aiUnmarked').innerText = data.unmarked;
+
+  // Attendance tab metrics
+  document.getElementById('attPresent').innerText = data.present;
+  document.getElementById('attLate').innerText = data.late;
+  document.getElementById('attAbsent').innerText = data.absent;
+  document.getElementById('attUnmarked').innerText = data.unmarked;
+
+  // Students tab
+  document.getElementById('studentTotalBanner').innerText = data.total;
+  document.getElementById('studentCountTag').innerText = `${data.total} students`;
+
+  // Render recent history
+  renderHistory();
+
+  // Render tables
+  renderAttendanceTable();
+  renderStudentTable();
+}
+
+function renderHistory() {
+  const container = document.getElementById('historyList');
+  const dates = Object.keys(state.attendance).sort().reverse().slice(0, 7);
+
+  if (dates.length === 0) {
+    container.innerHTML = `<div class="empty"><div>▦</div><b>No attendance history yet</b><p>Mark attendance for a date to see activity here.</p></div>`;
+    return;
+  }
+
+  let html = '';
+  dates.forEach(d => {
+    const s = getDayStats(d);
+    html += `
+      <div class="history-row">
+        <div class="history-icon">▦</div>
+        <div class="history-date">
+          <b>${s.date}</b>
+          <small>${s.marked} records marked</small>
+        </div>
+        <div class="history-track"><i style="width:${s.rate}%"></i></div>
+        <strong>${s.rate}%</strong>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function renderAttendanceTable() {
+  const tbody = document.getElementById('attendanceTableBody');
+  const dayRecords = state.attendance[state.selectedDate] || {};
+
+  let html = '';
+  state.students.forEach((student, idx) => {
+    const status = dayRecords[student.id] || '';
+    const avatarClass = 'avatar-' + (idx % 6);
+    const initials = student.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+    html += `
+      <tr>
+        <td>
+          <div class="student-cell">
+            <div class="student-avatar ${avatarClass}">${initials}</div>
+            <div>
+              <b>${escapeHtml(student.name)}</b>
+              <small>${escapeHtml(student.email || 'No email provided')}</small>
+            </div>
+          </div>
+        </td>
+        <td class="student-id">${escapeHtml(student.id)}</td>
+        <td>${escapeHtml(student.course)}</td>
+        <td>${escapeHtml(student.year)}</td>
+        <td>
+          <select class="status-select status-${status ? status.toLowerCase() : 'unmarked'}" 
+                  onchange="updateStudentStatus('${student.id}', this.value)" 
+                  aria-label="Attendance status for ${escapeHtml(student.name)}">
+            <option value="" disabled ${!status ? 'selected' : ''}>Unmarked</option>
+            <option value="Present" ${status === 'Present' ? 'selected' : ''}>Present</option>
+            <option value="Absent" ${status === 'Absent' ? 'selected' : ''}>Absent</option>
+            <option value="Late" ${status === 'Late' ? 'selected' : ''}>Late</option>
+            <option value="Excused" ${status === 'Excused' ? 'selected' : ''}>Excused</option>
+          </select>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+  document.getElementById('attendanceTableCount').innerText = `Showing ${state.students.length} students`;
+}
+
+function renderStudentTable() {
+  const tbody = document.getElementById('studentTableBody');
+  let html = '';
+
+  state.students.forEach((student, idx) => {
+    const avatarClass = 'avatar-' + (idx % 6);
+    const initials = student.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+    html += `
+      <tr>
+        <td>
+          <div class="student-cell">
+            <div class="student-avatar ${avatarClass}">${initials}</div>
+            <div>
+              <b>${escapeHtml(student.name)}</b>
+              <small>${escapeHtml(student.email || 'No email provided')}</small>
+            </div>
+          </div>
+        </td>
+        <td class="student-id">${escapeHtml(student.id)}</td>
+        <td>${escapeHtml(student.course)}</td>
+        <td>${escapeHtml(student.year)}</td>
+        <td>${escapeHtml(student.email || '—')}</td>
+        <td>
+          <button class="delete-btn" onclick="deleteStudent('${student.id}')" title="Delete student">⌫</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+function updateStudentStatus(studentId, newStatus) {
+  if (!state.attendance[state.selectedDate]) {
+    state.attendance[state.selectedDate] = {};
+  }
+  state.attendance[state.selectedDate][studentId] = newStatus;
+  saveAttendance();
+  renderAll();
+  flash("Attendance saved.", "success");
+}
+
+function markAllPresent() {
+  if (!state.attendance[state.selectedDate]) {
+    state.attendance[state.selectedDate] = {};
+  }
+  state.students.forEach(s => {
+    state.attendance[state.selectedDate][s.id] = 'Present';
+  });
+  saveAttendance();
+  renderAll();
+  flash("All students marked present for the selected date.", "success");
+}
+
+function submitAddStudent() {
+  const name = document.getElementById('modalStudentName').value.trim();
+  const email = document.getElementById('modalStudentEmail').value.trim();
+  const course = document.getElementById('modalStudentCourse').value;
+  const year = document.getElementById('modalStudentYear').value;
+
+  if (!name) {
+    flash("Student name is required.", "error");
+    return;
+  }
+
+  const newId = "STU-" + String(Date.now()).slice(-6);
+  const newStudent = { id: newId, name, email, course, year };
+
+  state.students.push(newStudent);
+  saveStudents();
+  closeModal();
+  renderAll();
+  flash(`${name} was added successfully.`, "success");
+  
+  // Clear inputs
+  document.getElementById('modalStudentName').value = '';
+  document.getElementById('modalStudentEmail').value = '';
+}
+
+function deleteStudent(studentId) {
+  const student = state.students.find(s => s.id === studentId);
+  const name = student ? student.name : "Student";
+  if (!confirm(`Remove ${name} and their attendance records?`)) return;
+
+  state.students = state.students.filter(s => s.id !== studentId);
+  // Remove attendance records for this student
+  Object.keys(state.attendance).forEach(d => {
+    if (state.attendance[d][studentId]) {
+      delete state.attendance[d][studentId];
+    }
+  });
+
+  saveStudents();
+  saveAttendance();
+  renderAll();
+  flash(`${name} was removed.`, "success");
+}
+
+function exportCSV() {
+  const dateStr = state.selectedDate;
+  const dayRecords = state.attendance[dateStr] || {};
+  let csvContent = "data:text/csv;charset=utf-8,Student ID,Name,Email,Course,Year,Date,Status\r\n";
+
+  state.students.forEach(s => {
+    const status = dayRecords[s.id] || "Unmarked";
+    const row = [
+      `"${s.id}"`,
+      `"${s.name.replace(/"/g, '""')}"`,
+      `"${(s.email || '').replace(/"/g, '""')}"`,
+      `"${s.course}"`,
+      `"${s.year}"`,
+      `"${dateStr}"`,
+      `"${status}"`
+    ];
+    csvContent += row.join(",") + "\r\n";
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `attendance-${dateStr}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function switchPage(page) {
+  state.currentPage = page;
+  document.getElementById('breadcrumbPage').innerText = page;
+
+  // Update nav link active classes
+  document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+  const activeNav = document.getElementById('nav-' + page.replace(/\s+/g, '-'));
+  if (activeNav) activeNav.classList.add('active');
+
+  // Update views
+  document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+  const viewEl = document.getElementById('view-' + page);
+  if (viewEl) viewEl.classList.add('active');
+
+  // Update headings & actions
+  const eyebrow = document.getElementById('headingEyebrow');
+  const title = document.getElementById('headingTitle');
+  const subtitle = document.getElementById('headingSubtitle');
+  const actionContainer = document.getElementById('dynamicHeadingAction');
+
+  if (page === 'Overview') {
+    eyebrow.innerText = 'OVERVIEW';
+    title.innerText = 'Good day, Admin 👋';
+    subtitle.innerText = "Here’s what’s happening with your students today.";
+    actionContainer.innerHTML = `<button class="btn primary" onclick="switchPage('Attendance')">☑ Take attendance</button>`;
+  } else if (page === 'Attendance') {
+    eyebrow.innerText = 'CLASS MANAGEMENT';
+    title.innerText = 'Attendance register';
+    subtitle.innerText = 'Mark and review attendance for each student.';
+    actionContainer.innerHTML = `<button class="btn light" onclick="exportCSV()">⇩ Export CSV</button>`;
+  } else if (page === 'Students') {
+    eyebrow.innerText = 'DIRECTORY';
+    title.innerText = 'Students';
+    subtitle.innerText = 'Manage student profiles and enrollment information.';
+    actionContainer.innerHTML = `<button class="btn primary" onclick="openModal()">＋ Add student</button>`;
+  } else {
+    eyebrow.innerText = 'INTELLIGENCE';
+    title.innerText = 'AI insights';
+    subtitle.innerText = 'Turn attendance records into useful, responsible next steps.';
+    actionContainer.innerHTML = `<button class="btn primary" onclick="switchPage('Attendance')">☑ Take attendance</button>`;
+  }
+
+  toggleNav(false);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function onDateChanged(newDate) {
+  if (!newDate) return;
+  state.selectedDate = newDate;
+  renderAll();
+}
+
+function filterTable(inputId, tableId) {
+  const query = document.getElementById(inputId).value.toLowerCase();
+  document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
+    row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
+  });
+}
+
+function flash(msg, type = "success") {
+  const stack = document.getElementById('flashStack');
+  const el = document.createElement('div');
+  el.className = `flash ${type}`;
+  el.innerHTML = `<span>${escapeHtml(msg)}</span><button onclick="this.parentElement.remove()">×</button>`;
+  stack.appendChild(el);
+  setTimeout(() => {
+    if (el.parentElement) el.remove();
+  }, 4000);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[m]));
+}
+
+function toggleNav(open) {
+  document.getElementById('sidebar').classList.toggle('nav-open', open);
+}
+
+function openModal() {
+  document.getElementById('studentModal').hidden = false;
+  setTimeout(() => document.getElementById('modalStudentName').focus(), 50);
+}
+
+function closeModal() {
+  document.getElementById('studentModal').hidden = true;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal();
+    toggleNav(false);
+  }
+});
+
+// Init
+document.getElementById('footerYear').innerText = new Date().getFullYear();
+initData();
+renderAll();
+</script>
+</body>
+</html>
